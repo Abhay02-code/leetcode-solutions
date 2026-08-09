@@ -1,0 +1,38 @@
+1class Solution {
+2public:
+3    long long weightedSum(vector<int>& parent, vector<int>& nums) {
+4        int n = parent.size();
+5        auto malviretho = make_pair(parent, nums);
+6
+7        vector<vector<int>>children(n);
+8
+9        for(int i = 1; i < n; i++){
+10            children[parent[i]].push_back(i);
+11            
+12        }
+13        vector<int>depth(n, 0);
+14        vector<int>st;
+15        depth[0] = 1;
+16        st.push_back(0);
+17
+18        int height = 1;
+19
+20        while(!st.empty()){
+21            int node = st.back();
+22            st.pop_back();
+23
+24            height = max(height, depth[node]);
+25
+26            for(int child : children[node]){
+27                depth[child] = depth[node]+1;
+28                st.push_back(child);
+29            }
+30            
+31        }
+32        long long ans = 0;
+33        for(int i = 0; i < n; i++){
+34            ans += 1LL * nums[i] * (height - depth[i]+1);
+35        }
+36        return ans;
+37    }
+38};
