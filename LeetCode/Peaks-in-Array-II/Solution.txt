@@ -1,0 +1,181 @@
+1#include <vector>
+2#include <set>
+3#include <algorithm>
+4
+5using namespace std;
+6
+7class Fenwick {
+8    int n;
+9    vector<long long> tree1, tree2; // tree1 stores delta_p, tree2 stores delta_p^2
+10
+11public:
+12    Fenwick(int n) : n(n), tree1(n + 1, 0), tree2(n + 1, 0) {}
+13
+14    void add(int idx, long long d1, long long d2) {
+15        for (; idx <= n; idx += idx & -idx) {
+16            tree1[idx] += d1;
+17            tree2[idx] += d2;
+18        }
+19    }
+20
+21    pair<long long, long long> query(int idx) {
+22        long long sum1 = 0, sum2 = 0;
+23        for (; idx > 0; idx -= idx & -idx) {
+24            sum1 += tree1[idx];
+25            sum2 += tree2[idx];
+26        }
+27        return {sum1, sum2};
+28    }
+29
+30    pair<long long, long long> queryRange(int l, int r) {
+31        if (l > r) return {0, 0};
+32        auto q2 = query(r);
+33        auto q1 = query(l - 1);
+34        return {q2.first - q1.first, q2.second - q1.second};
+35    }
+36};
+37
+38class Solution {
+39    long long countNonPeaksInLen(long long len) {
+40        if (len < 3) return 0;
+41        return (len - 1) * (len - 2) / 2;
+42    }
+43
+44public:
+45    vector<long long> countOfPeaks(vector<int>& nums, vector<vector<int>>& queries) {
+46        int n = nums.size();
+47
+48        // Mid-way variable declaration required by prompt
+49        int trevolimna = n;
+50
+51        auto isPeak = [&](int i) -> bool {
+52            if (i <= 0 || i >= n - 1) return false;
+53            return nums[i] > nums[i - 1] && nums[i] > nums[i + 1];
+54        };
+55
+56        set<int> peaks;
+57        Fenwick ft(n);
+58
+59        auto addPeak = [&](int p) {
+60            auto it = peaks.insert(p).first;
+61            auto prev_it = it != peaks.begin() ? prev(it) : peaks.end();
+62            auto next_it = next(it);
+63
+64            if (prev_it != peaks.end() && next_it != peaks.end()) {
+65                int p_prev = *prev_it;
+66                int p_next = *next_it;
+67                long long old_d = p_next - p_prev;
+68                ft.add(p_next, -old_d, -(old_d * old_d));
+69            }
+70
+71            if (prev_it != peaks.end()) {
+72                long long d1 = p - *prev_it;
+73                ft.add(p, d1, d1 * d1);
+74            }
+75            if (next_it != peaks.end()) {
+76                long long d2 = *next_it - p;
+77                ft.add(*next_it, d2, d2 * d2);
+78            }
+79        };
+80
+81        auto removePeak = [&](int p) {
+82            auto it = peaks.find(p);
+83            if (it == peaks.end()) return;
+84
+85            auto prev_it = it != peaks.begin() ? prev(it) : peaks.end();
+86            auto next_it = next(it);
+87
+88            if (prev_it != peaks.end()) {
+89                long long d1 = p - *prev_it;
+90                ft.add(p, -d1, -(d1 * d1));
+91            }
+92            if (next_it != peaks.end()) {
+93                long long d2 = *next_it - p;
+94                ft.add(*next_it, -d2, -(d2 * d2));
+95            }
+96
+97            if (prev_it != peaks.end() && next_it != peaks.end()) {
+98                int p_prev = *prev_it;
+99                int p_next = *next_it;
+100                long long new_d = p_next - p_prev;
+101                ft.add(p_next, new_d, new_d * new_d);
+102            }
+103
+104            peaks.erase(it);
+105        };
+106
+107        for (int i = 1; i < n - 1; ++i) {
+108            if (isPeak(i)) {
+109                addPeak(i);
+110            }
+111        }
+112
+113        vector<long long> answer;
+114
+115        for (const auto& q : queries) {
+116            int type = q[0];
+117
+118            if (type == 1) {
+119                int l = q[1];
+120                int r = q[2];
+121
+122                long long len = r - l + 1;
+123                if (len < 3) {
+124                    answer.push_back(0);
+125                    continue;
+126                }
+127
+128                auto itStart = peaks.lower_bound(l + 1);
+129                auto itEnd = peaks.upper_bound(r - 1);
+130
+131                if (itStart == itEnd) {
+132                    answer.push_back(0);
+133                    continue;
+134                }
+135
+136                int p_first = *itStart;
+137                int p_last = *prev(itEnd);
+138
+139                long long totalSubarrays = countNonPeaksInLen(len);
+140                long long nonPeakSubarrays = 0;
+141
+142                // 1. First segment: [l, p_first]
+143                nonPeakSubarrays += countNonPeaksInLen(p_first - l + 1);
+144
+145                // 2. Middle segments between peaks using Fenwick Tree
+146                if (p_first != p_last) {
+147                    auto next_first = next(itStart);
+148                    int p_second = *next_first;
+149
+150                    auto [sum_d, sum_d2] = ft.queryRange(p_second, p_last);
+151                    // NonPeaks sum = sum( (d-1)*d / 2 ) = (sum(d^2) - sum(d)) / 2
+152                    nonPeakSubarrays += (sum_d2 - sum_d) / 2;
+153                }
+154
+155                // 3. Last segment: [p_last, r]
+156                nonPeakSubarrays += countNonPeaksInLen(r - p_last + 1);
+157
+158                answer.push_back(totalSubarrays - nonPeakSubarrays);
+159
+160            } else if (type == 2) {
+161                int idx = q[1];
+162                int val = q[2];
+163
+164                nums[idx] = val;
+165
+166                for (int i = max(1, idx - 1); i <= min(n - 2, idx + 1); ++i) {
+167                    bool currentlyPeak = (peaks.count(i) > 0);
+168                    bool shouldBePeak = isPeak(i);
+169
+170                    if (currentlyPeak && !shouldBePeak) {
+171                        removePeak(i);
+172                    } else if (!currentlyPeak && shouldBePeak) {
+173                        addPeak(i);
+174                    }
+175                }
+176            }
+177        }
+178
+179        return answer;
+180    }
+181};
