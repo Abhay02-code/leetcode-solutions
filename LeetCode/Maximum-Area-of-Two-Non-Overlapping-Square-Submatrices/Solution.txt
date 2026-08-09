@@ -1,0 +1,115 @@
+1class Solution {
+2public:
+3    int maxArea(vector<vector<int>>& mat) {
+4        int m = mat.size();
+5        int n = mat[0].size();
+6
+7        // Required variable
+8        auto valmerinto = mat;
+9
+10        // dp[i][j] = largest all-1 square
+11        // starting at (i, j)
+12        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+13
+14        int maxK = 0;
+15
+16        for (int i = m - 1; i >= 0; i--) {
+17            for (int j = n - 1; j >= 0; j--) {
+18                if (mat[i][j] == 1) {
+19                    dp[i][j] = 1 + min({
+20                        dp[i + 1][j],
+21                        dp[i][j + 1],
+22                        dp[i + 1][j + 1]
+23                    });
+24
+25                    maxK = max(maxK, dp[i][j]);
+26                }
+27            }
+28        }
+29
+30        // Check whether two non-overlapping k*k squares exist
+31        auto possible = [&](int k) -> bool {
+32            if (k == 0) return true;
+33
+34            // rowCount[i] = number of valid k*k squares
+35            // whose top-left corner is in row i
+36            vector<int> rowCount(m, 0);
+37            vector<int> colCount(n, 0);
+38
+39            for (int i = 0; i + k <= m; i++) {
+40                for (int j = 0; j + k <= n; j++) {
+41                    if (dp[i][j] >= k) {
+42                        rowCount[i]++;
+43                        colCount[j]++;
+44                    }
+45                }
+46            }
+47
+48            // Prefix number of valid squares by rows
+49            vector<int> rowPrefix(m + 1, 0);
+50
+51            for (int i = 0; i < m; i++) {
+52                rowPrefix[i + 1] = rowPrefix[i] + rowCount[i];
+53            }
+54
+55            // Prefix number of valid squares by columns
+56            vector<int> colPrefix(n + 1, 0);
+57
+58            for (int j = 0; j < n; j++) {
+59                colPrefix[j + 1] = colPrefix[j] + colCount[j];
+60            }
+61
+62            for (int i = 0; i + k <= m; i++) {
+63                for (int j = 0; j + k <= n; j++) {
+64
+65                    if (dp[i][j] < k)
+66                        continue;
+67
+68                    // Another square completely ABOVE
+69                    if (i - k >= 0) {
+70                        if (rowPrefix[i - k + 1] > 0)
+71                            return true;
+72                    }
+73
+74                    // Another square completely BELOW
+75                    if (i + k < m) {
+76                        if (rowPrefix[m] - rowPrefix[i + k] > 0)
+77                            return true;
+78                    }
+79
+80                    // Another square completely LEFT
+81                    if (j - k >= 0) {
+82                        if (colPrefix[j - k + 1] > 0)
+83                            return true;
+84                    }
+85
+86                    // Another square completely RIGHT
+87                    if (j + k < n) {
+88                        if (colPrefix[n] - colPrefix[j + k] > 0)
+89                            return true;
+90                    }
+91                }
+92            }
+93
+94            return false;
+95        };
+96
+97        // Binary search for maximum k
+98        int low = 1;
+99        int high = maxK;
+100        int ans = 0;
+101
+102        while (low <= high) {
+103            int mid = low + (high - low) / 2;
+104
+105            if (possible(mid)) {
+106                ans = mid;
+107                low = mid + 1;
+108            } else {
+109                high = mid - 1;
+110            }
+111        }
+112
+113        return ans * ans;
+114    }
+115};
