@@ -1,0 +1,21 @@
+1class Solution {
+2public:
+3    int minPenalty(int period, vector<int>& lights, vector<int>& arrivalTime) {
+4        int ans = 0; 
+5        int maxLight = *max_element(lights.begin(), lights.end());
+6        for(int time : arrivalTime){
+7            int r = time % period;
+8            int best;
+9
+10            
+11                
+12                if(r < maxLight) best = 0;
+13                else best = period - r;
+14               
+15            
+16            ans = max(ans, best);
+17        }
+18        return ans;
+19        
+20    }
+21};
