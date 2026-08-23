@@ -1,0 +1,18 @@
+1class Solution {
+2public:
+3    vector<vector<int>> findDisappearedNumbers(vector<int>& nums, int lower, int upper) {
+4        vector<vector<int>>ans;
+5        sort(nums.begin(), nums.end());
+6        int prev = lower-1;
+7        for(int x : nums){
+8            if(x<lower || x>upper) continue;
+9            if(x>prev+1) ans.push_back({prev+1,x-1});
+10            prev = x;
+11        }
+12        if(prev < upper){
+13            ans.push_back({prev+1, upper});
+14        }
+15        return ans;
+16        
+17    }
+18};
