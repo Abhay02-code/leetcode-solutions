@@ -1,0 +1,22 @@
+1class Solution {
+2public:
+3    bool isPalindromic(string s) {
+4        string binarystr = "";
+5        for(char c: s){
+6            int asciival = c;
+7            for(int i = 7; i >= 0; i--){
+8                int bit = (asciival >> i) & 1;
+9                binarystr += to_string(bit);
+10            }
+11        }
+12        int left = 0;
+13        int right = binarystr.length()-1;
+14        while(left<right){
+15            if(binarystr[left] != binarystr[right]) return false;
+16            left++;
+17            right--;
+18        }
+19        return true;
+20        
+21    }
+22};
