@@ -1,0 +1,13 @@
+1class Solution {
+2public:
+3    int elevatorRequests(int n, vector<int>& requests) {
+4        int sum = 0;
+5        int current = 0;
+6        for(int i = 0; i < requests.size(); i++){
+7            sum += abs((current- requests[i]));
+8            current = requests[i];
+9        }
+10        return sum;
+11        
+12    }
+13};
