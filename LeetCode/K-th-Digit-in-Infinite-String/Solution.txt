@@ -1,0 +1,65 @@
+1class Solution {
+2public:
+3    int kthDigit(long long k) {
+4        
+5        // First block: 1 2 3 4 5 6 7 8 9
+6        if (k <= 9)
+7            return k;
+8
+9        k -= 9;
+10
+11        // d = number of digits in each number
+12        long long d = 2;
+13
+14        while (true) {
+15            long long first = 1;
+16
+17            for (int i = 0; i < d - 2; i++)
+18                first *= 10;
+19
+20            long long blocks = 9 * first;
+21            long long blockDigits = 10 * d;
+22            long long totalDigits = blocks * blockDigits;
+23
+24            if (k > totalDigits) {
+25                k -= totalDigits;
+26                d++;
+27            }
+28            else {
+29                break;
+30            }
+31        }
+32
+33        // Make k zero-indexed
+34        k--;
+35
+36        long long first = 1;
+37
+38        for (int i = 0; i < d - 2; i++)
+39            first *= 10;
+40
+41        // Find block
+42        long long blockIndex = k / (10 * d);
+43        long long b = first + blockIndex;
+44
+45        // Position inside block
+46        long long pos = k % (10 * d);
+47
+48        // Find number
+49        long long numberIndex = pos / d;
+50
+51        long long number;
+52
+53        if (b % 2 == 0)
+54            number = 10 * b + numberIndex;
+55        else
+56            number = 10 * b + (9 - numberIndex);
+57
+58        // Find digit inside number
+59        long long digitIndex = pos % d;
+60
+61        string s = to_string(number);
+62
+63        return s[digitIndex] - '0';
+64    }
+65};
