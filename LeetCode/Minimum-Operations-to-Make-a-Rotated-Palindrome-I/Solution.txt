@@ -1,0 +1,17 @@
+1class Solution {
+2public:
+3    int minOperations(string s) {
+4        int n = s.size();
+5        int ans = INT_MAX;
+6        for(int r = 0; r < n; r++){
+7            string t = s.substr(r)+s.substr(0,r);
+8            int cost = 0;
+9            for(int i = 0, j = n-1; i < j; i++, j--){
+10                int diff = abs(t[i] -t[j]);
+11                cost  += min(diff, 26 - diff);
+12            }
+13            ans = min(ans, r+cost);
+14        }
+15        return ans;
+16    }
+17};
