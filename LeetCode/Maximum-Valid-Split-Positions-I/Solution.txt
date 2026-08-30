@@ -1,0 +1,65 @@
+1class Solution {
+2public:
+3
+4    int getScore(vector<int>& nums) {
+5        int n = nums.size();
+6
+7        if (n < 2) return 0;
+8
+9        vector<int> prefix(n);
+10        vector<int> suffix(n);
+11
+12        // Prefix GCD
+13        prefix[0] = nums[0];
+14
+15        for (int i = 1; i < n; i++) {
+16            prefix[i] = gcd(prefix[i - 1], nums[i]);
+17        }
+18
+19        // Suffix GCD
+20        suffix[n - 1] = nums[n - 1];
+21
+22        for (int i = n - 2; i >= 0; i--) {
+23            suffix[i] = gcd(suffix[i + 1], nums[i]);
+24        }
+25
+26        int score = 0;
+27
+28        // Try every split
+29        for (int i = 0; i < n - 1; i++) {
+30
+31            int leftGcd = prefix[i];
+32            int rightGcd = suffix[i + 1];
+33
+34            if (leftGcd == rightGcd) {
+35                score++;
+36            }
+37        }
+38
+39        return score;
+40    }
+41
+42    int maxValidSplits(vector<int>& nums) {
+43
+44        int n = nums.size();
+45
+46        // Don't remove anything
+47        int ans = getScore(nums);
+48
+49        // Remove every element once
+50        for (int remove = 0; remove < n; remove++) {
+51
+52            vector<int> arr;
+53
+54            for (int i = 0; i < n; i++) {
+55                if (i != remove) {
+56                    arr.push_back(nums[i]);
+57                }
+58            }
+59
+60            ans = max(ans, getScore(arr));
+61        }
+62
+63        return ans;
+64    }
+65};
