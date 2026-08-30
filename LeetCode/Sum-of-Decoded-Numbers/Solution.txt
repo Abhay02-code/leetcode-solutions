@@ -1,0 +1,33 @@
+1class Solution {
+2public:
+3
+4    long long power(long long x, long long y){
+5        const long long MOD = 1000000007;
+6        long long ans = 1;
+7        while(y>0){
+8            if(y%2 == 1){
+9                ans = (ans*x)%MOD;
+10            }
+11            x = (x*x)%MOD;
+12            y = y/2;
+13        }
+14        return ans;
+15    }
+16    int sumDecoded(vector<long long>& nums) {
+17        const long long MOD = 1000000007;
+18        long long ans = 0;
+19        for(long long num : nums){
+20            long long width = num%10;
+21            long long d = num/10;
+22            string s = to_string(d);
+23            string xs = s.substr(0, width);
+24            string ys = s.substr(width);
+25            long long x = stoll(xs);
+26            long long y = stoll(ys);
+27            long long decoded = power(x,y);
+28            ans = (ans+decoded)%MOD;
+29        }
+30        return ans;
+31        
+32    }
+33};
