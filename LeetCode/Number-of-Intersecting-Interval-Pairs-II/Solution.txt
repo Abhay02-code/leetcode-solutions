@@ -1,0 +1,19 @@
+1class Solution {
+2public:
+3    long long countIntersectingIntervals(vector<vector<int>>& intervals) {
+4        int n = intervals.size();
+5        sort(intervals.begin(), intervals.end());
+6        vector<int>start(n);
+7        for(int i = 0; i < n; i++){
+8            start[i] = intervals[i][0];
+9        }
+10        long long ans = 0;
+11        for(int i = 0; i < n; i++){
+12            int r = intervals[i][1];
+13            int pos = upper_bound(start.begin(), start.end(), r) - start.begin();
+14            ans += pos - i -1;
+15        }
+16        return ans;
+17    
+18    }
+19};
