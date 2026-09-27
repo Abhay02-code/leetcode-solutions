@@ -1,0 +1,27 @@
+1class Solution {
+2public:
+3    int maxEqualAdjacentPairs(vector<int>& nums) {
+4        int ans = 0;
+5        
+6        map<pair<int,int>, int> mp;
+7        for(int i = 0; i < nums.size()-1; i++){
+8            if(nums[i] == nums[i+1]) {
+9                ans++;
+10            }
+11            else{
+12                int a = nums[i];
+13                int b = nums[i+1];
+14                if(a>b)swap(a,b);
+15                 mp[{a,b}]++;
+16            }
+17            
+18            
+19        }
+20        int mx = 0;
+21        for(auto it : mp){
+22            mx = max(mx, it.second);
+23        }
+24        return ans+mx;
+25        
+26    }
+27};
