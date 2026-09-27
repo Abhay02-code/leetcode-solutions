@@ -1,0 +1,28 @@
+1class Solution {
+2public:
+3    vector<int> rearrangeArray(vector<int>& nums) {
+4        map<int,int>freq;
+5        for(int x : nums){
+6            freq[x]++;
+7            
+8        }
+9        vector<int>ans;
+10        while(!freq.empty()){
+11            vector<int>remove;
+12            for(auto &p : freq){
+13                ans.push_back(p.first);
+14                p.second--;
+15                if(p.second == 0){
+16                    remove.push_back(p.first);
+17                }
+18            }
+19            for(int x : remove){
+20                freq.erase(x);
+21            }
+22        }
+23        
+24        return ans;
+25        
+26        
+27    }
+28};
