@@ -1,0 +1,59 @@
+1class BusBooking {
+2public:
+3    vector<vector<bool>>booked;
+4    vector<vector<int>>seatCost;
+5    int n;
+6    int totalTime;
+7    int bookedCount;
+8    BusBooking(int n) {
+9        this->n = n;
+10        totalTime = 0;
+11        bookedCount = 0;
+12        booked.resize(n+1,vector<bool>(4,false));
+13        seatCost.resize(n+1,vector<int>(4,0));
+14        
+15    }
+16    
+17    void toggle(string seat) {
+18        char ch = seat[0];
+19        int row = stoi(seat.substr(1));
+20        int col = ch -'A';
+21        if(booked[row][col]){
+22            totalTime -= seatCost[row][col];
+23            bookedCount --;
+24            booked[row][col] = false;
+25            seatCost[row][col] = 0;
+26            return;
+27        }
+28        int time = 1;
+29        if(ch =='A' && booked[row][1]){
+30            time = 3;
+31        }
+32        if(ch == 'D' && booked[row][2]){
+33            time = 3;
+34        }
+35        booked[row][col] = true;
+36        seatCost[row][col] = time;
+37
+38        totalTime += time;
+39        bookedCount++;
+40        
+41    }
+42    
+43    int getTotalTime() {
+44        return totalTime;
+45        
+46    }
+47    
+48    int getMinTime() {
+49        return bookedCount;
+50    }
+51};
+52
+53/**
+54 * Your BusBooking object will be instantiated and called as such:
+55 * BusBooking* obj = new BusBooking(n);
+56 * obj->toggle(seat);
+57 * int param_2 = obj->getTotalTime();
+58 * int param_3 = obj->getMinTime();
+59 */
