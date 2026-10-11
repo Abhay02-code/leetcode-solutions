@@ -1,0 +1,28 @@
+1class Solution {
+2public:
+3    vector<int> maxPrimes(int n, int s) {
+4        vector<int>prime;
+5        
+6        for(int i = 2; i <= n; i++){
+7            bool isPrime = true;
+8            for(int j = 2; j * j <= i; j++){
+9                if(i%j == 0){
+10                    isPrime = false;
+11                    break;
+12                }
+13            }
+14            if(isPrime){
+15                if(s>=i){
+16                    prime.push_back(i);
+17                    s -= i;
+18                }
+19                else{
+20                    break;
+21                }
+22            }
+23        }
+24        return prime;
+25        
+26        
+27    }
+28};
