@@ -1,0 +1,14 @@
+1class Solution {
+2public:
+3    bool threeFibonacciSum(int n) {
+4        int a = 0, b = 1;
+5        while(true){
+6            int c = a+b;
+7            if(a+b+c == n) return true;
+8            if(a+b+c>n) return false;
+9            a = b;
+10            b = c;
+11        }
+12        
+13    }
+14};
