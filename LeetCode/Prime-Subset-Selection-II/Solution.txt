@@ -1,0 +1,52 @@
+1class Solution {
+2public:
+3    vector<int> maxPrimeSubset(int n, int s) {
+4        vector<int>prime;
+5        for(int i = 2; i <= n; i++){
+6            bool isPrime = true;
+7            for(int j = 2; j*j<= i; j++){
+8                if(i%j == 0){
+9                    isPrime = false;
+10                    break;
+11                }
+12            }
+13            if(isPrime){
+14                prime.push_back(i);
+15            }
+16        }
+17            int m = prime.size();
+18            int INF = 1e9;
+19            vector<vector<int>>dp(m+1,vector<int>(s+1,INF));
+20            dp[m][0] = 0;
+21            for(int i = m-1; i >= 0; i--){
+22                for(int j = 0; j <= s; j++){
+23                    dp[i][j] = dp[i+1][j];
+24                    if(j >= prime[i] && dp[i+1][j-prime[i]] != INF){
+25                        dp[i][j] = min(dp[i][j],dp[i+1][j-prime[i]]+1);
+26                    }
+27                }
+28            }
+29            int best = 0;
+30            for(int j = s; j  >= 1; j--){
+31                if(dp[0][j] != INF){
+32                    best = j;
+33                    break;
+34                }
+35            }
+36            vector<int>ans;
+37            if(best == 0){
+38                return ans;
+39            }
+40            int cnt = dp[0][best];
+41            for(int i = 0; i < m && cnt > 0; i++){
+42                if(best >= prime[i] && dp[i+1][best-prime[i]] == cnt-1){
+43                    ans.push_back(prime[i]);
+44                    best -= prime[i];
+45                    cnt--;
+46                }
+47            }
+48        
+49        return ans;
+50        
+51    }
+52};
